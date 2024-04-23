@@ -19,7 +19,7 @@ project ("HqMagma")
 # Set source files for the executable.
 add_executable(HqMagma "main.cpp")
 
-set_target_properties(Magma PROPERTIES
+set_target_properties(HqMagma PROPERTIES
   CXX_STANDARD 17
   CXX_EXTENSIONS OFF
   COMPILE_WARNING_AS_ERROR OFF
