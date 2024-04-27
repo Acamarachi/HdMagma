@@ -1,7 +1,7 @@
 # CMakeList.txt : CMake project for Ectoplasme, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.14)
 project(HqMagma VERSION 0.1.0 LANGUAGES CXX C)
 
 #possible rendering api : VULKAN and OPENGL
@@ -83,20 +83,30 @@ if(RENDERING_API STREQUAL OPENGL)
 	endif()
 endif()
 
+find_package(OpenUSD REQUIRED HINTS ${USD_PATH} NAMES pxr)
+if (OpenUSD_FOUND)
+    message(STATUS "Find OpenUSD version: ${PXR_VERSION}")
+endif()
 
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw
   GIT_TAG master
-)
+) 
 FetchContent_MakeAvailable(glfw)
 
 FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/g-truc/glm
-  GIT_TAG master
+  GIT_TAG master 
 )
 FetchContent_MakeAvailable(glm)
+
+if(NOT glm_POPULATED)
+	message("Fetching glad")
+	FetchContent_Populate(glm)
+	add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
+endif()
 
 # Include Vulkan as a targeted lib
 if(RENDERING_API STREQUAL VULKAN)
@@ -104,4 +114,4 @@ if(RENDERING_API STREQUAL VULKAN)
 endif()
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm glad OpenUSD)
