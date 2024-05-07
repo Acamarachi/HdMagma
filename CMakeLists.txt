@@ -85,28 +85,30 @@ endif()
 
 find_package(OpenUSD REQUIRED HINTS ${USD_PATH} NAMES pxr)
 if (OpenUSD_FOUND)
-    message(STATUS "Find OpenUSD version: ${PXR_VERSION}")
+    message(STATUS "Find OpenUSD version: ${PXR_VERSION} at ${PXR_INCLUDE_DIRS}")
+	target_include_directories(HqMagma PUBLIC ${PXR_INCLUDE_DIRS})
 endif()
 
 FetchContent_Declare(
   glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw
+  GIT_REPOSITORY https://github.com/glfw/glfw.git
+  GIT_SHALLOW    TRUE
+  GIT_PROGRESS   TRUE
   GIT_TAG master
 ) 
 FetchContent_MakeAvailable(glfw)
 
 FetchContent_Declare(
-  glm
-  GIT_REPOSITORY https://github.com/g-truc/glm
-  GIT_TAG master 
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm
+    GIT_TAG        master
+    GIT_SHALLOW    TRUE
+    GIT_PROGRESS   TRUE
 )
-FetchContent_MakeAvailable(glm)
 
-if(NOT glm_POPULATED)
-	message("Fetching glad")
-	FetchContent_Populate(glm)
-	add_subdirectory(${glm_SOURCE_DIR} ${glm_BINARY_DIR})
-endif()
+message("Fetching glm")
+FetchContent_MakeAvailable(glm)
+target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS)
 
 # Include Vulkan as a targeted lib
 if(RENDERING_API STREQUAL VULKAN)
@@ -114,4 +116,4 @@ if(RENDERING_API STREQUAL VULKAN)
 endif()
 
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm glad OpenUSD)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm glad)
